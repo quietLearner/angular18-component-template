@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 
 type ServeStatus = 'online' | 'offline' | 'unknown';
 
@@ -13,7 +19,9 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
   status: ServeStatus[] = ['online', 'offline', 'unknown'];
   currentStatus: ServeStatus = 'online';
 
-  private intervalId?: ReturnType<typeof setInterval>;
+  // private intervalId?: ReturnType<typeof setInterval>;
+
+  private destroyDef = inject(DestroyRef);
 
   // constructor() {
   //   setInterval(() => {
@@ -23,13 +31,22 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit() {
-    this.intervalId = setInterval(() => {
+    // this.intervalId = setInterval(() => {
+    //   const rnd = Math.floor(Math.random() * this.status.length);
+    //   this.currentStatus = this.status[rnd];
+    // }, 3000);
+
+    const intervalId = setInterval(() => {
       const rnd = Math.floor(Math.random() * this.status.length);
       this.currentStatus = this.status[rnd];
     }, 3000);
+
+    this.destroyDef.onDestroy(() => {
+      clearInterval(intervalId);
+    });
   }
 
   ngOnDestroy() {
-    clearInterval(this.intervalId);
+    // clearInterval(this.intervalId);
   }
 }
